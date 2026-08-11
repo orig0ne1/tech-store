@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    url: ${SQLITE_DB_URL:jdbc:sqlite:webapp.db}
+    driver-class-name: org.sqlite.JDBC
+    username:
+    password:
+
+  jpa:
+    database-platform: org.hibernate.community.dialect.SQLiteDialect
+    hibernate:
+      ddl-auto: create
+    defer-datasource-initialization: true
+
+  flyway:
+    enabled: false
+
+  sql:
+    init:
+      mode: always
