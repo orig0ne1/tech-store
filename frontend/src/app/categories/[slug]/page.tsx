@@ -3,6 +3,8 @@ import { Suspense } from "react";
 import { notFound, redirect } from "next/navigation";
 import { getCategory, getCategoryProducts } from "@/lib/categories";
 import { getConfig } from "@/lib/config";
+import { getDictionary, tpl } from "@/lib/i18n";
+import { getLocale } from "@/lib/locale";
 import { ApiError } from "@/lib/api";
 import { ProductCard } from "@/components/ui/ProductCard";
 import { ProductGrid } from "@/components/ui/ProductGrid";
@@ -26,9 +28,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   try {
     const category = await getCategory(slug);
+    const t = getDictionary(await getLocale());
     return {
       title: category.name,
-      description: `Товары категории «${category.name}»`,
+      description: tpl(t.categories.productsDescription, { name: category.name }),
       alternates: { canonical: `/categories/${slug}` },
       openGraph: {
         title: category.name,
@@ -48,6 +51,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   const requestedPage = parseInt(readParam(sp.page), 10);
   const page =
     Number.isFinite(requestedPage) && requestedPage > 0 ? requestedPage : 0;
+  const t = getDictionary(await getLocale());
 
   const category = await getCategory(slug).catch((error: unknown) => {
     if (error instanceof ApiError && error.status === 404) {
@@ -59,7 +63,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   if (category === undefined) {
     return (
       <div className="container mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <ErrorState message="Не удалось загрузить категорию" />
+        <ErrorState message={t.categories.loadCategoryError} />
       </div>
     );
   }
@@ -83,7 +87,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   if (pageData === null) {
     return (
       <div className="container mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <ErrorState message="Не удалось загрузить товары категории" />
+        <ErrorState message={t.categories.loadProductsError} />
       </div>
     );
   }
@@ -98,7 +102,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   return (
     <div className="container mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <header className="mb-6">
-        <h1 className="text-3xl font-bold tracking-tight">{category.name}</h1>
+        <h1 className="font-display text-3xl font-bold tracking-tight">{category.name}</h1>
         {category.image && (
           <div className="mt-4 overflow-hidden rounded-xl">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -110,7 +114,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
           </div>
         )}
         <p className="mt-3 text-muted-foreground">
-          Найдено товаров: {pageData.totalElements}
+          {tpl(t.products.found, { count: pageData.totalElements })}
         </p>
       </header>
 
@@ -129,10 +133,10 @@ export default async function CategoryPage({ params, searchParams }: Props) {
 
       <div className="mt-6">
         {pageData.content.length === 0 ? (
-          <div className="rounded-xl border border-border bg-card px-6 py-16 text-center">
-            <p className="font-medium">Ничего не найдено</p>
+          <div className="glass-card rounded-xl px-6 py-16 text-center">
+            <p className="font-medium">{t.common.nothingFound}</p>
             <p className="mt-1 text-sm text-muted-foreground">
-              Попробуйте изменить запрос
+              {t.categories.changeQuery}
             </p>
           </div>
         ) : (

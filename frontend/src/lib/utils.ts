@@ -1,18 +1,25 @@
+import type { Locale } from "@/lib/i18n";
+
 export function cn(
   ...classes: Array<string | false | null | undefined>
 ): string {
   return classes.filter(Boolean).join(" ");
 }
 
-export function formatPrice(value: number, currency: string): string {
+export function formatPrice(
+  value: number,
+  currency: string,
+  locale: Locale = "en"
+): string {
+  const intl = locale === "ru" ? "ru-RU" : "en-US";
   try {
-    return new Intl.NumberFormat("ru-RU", {
+    return new Intl.NumberFormat(intl, {
       style: "currency",
       currency,
       maximumFractionDigits: 0,
     }).format(value);
   } catch {
-    return `${value.toLocaleString("ru-RU")} ${currency}`;
+    return `${value.toLocaleString(intl)} ${currency}`;
   }
 }
 

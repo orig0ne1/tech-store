@@ -23,7 +23,6 @@ public class AppConfigService {
                 new AppConfigResponse.Features(
                         features.isCatalog(),
                         features.isOrders(),
-                        features.isChat(),
                         features.isAvailabilityRequests()
                 ),
                 new AppConfigResponse.Theme(theme.getPrimaryColor()),

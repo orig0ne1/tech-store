@@ -2,7 +2,6 @@ export interface AppConfig {
   features: {
     catalog: boolean;
     orders: boolean;
-    chat: boolean;
     availabilityRequests: boolean;
   };
   theme: {
@@ -17,7 +16,6 @@ export const DEFAULT_CONFIG: AppConfig = {
   features: {
     catalog: true,
     orders: true,
-    chat: true,
     availabilityRequests: true,
   },
   theme: {

@@ -5,6 +5,8 @@ import { Bell, ChevronRight, ShoppingCart } from "lucide-react";
 import { getCompany } from "@/lib/company";
 import { getProduct, getProductAvailability, getRelatedProducts } from "@/lib/products";
 import { formatPrice } from "@/lib/utils";
+import { getDictionary, tpl } from "@/lib/i18n";
+import { getLocale } from "@/lib/locale";
 import { ApiError } from "@/lib/api";
 import { ProductCard } from "@/components/ui/ProductCard";
 import { ProductGrid } from "@/components/ui/ProductGrid";
@@ -26,13 +28,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       getProduct(slug),
       getCompany().catch(() => null),
     ]);
-    const siteName = company?.name ?? "Магазин";
+    const t = getDictionary(await getLocale());
+    const siteName = company?.name ?? t.common.store;
     const title = `${product.name} — ${siteName}`;
     return {
       title,
       description:
         product.description?.slice(0, 160) ??
-        `Купить ${product.name} по цене ${formatPrice(product.price, product.currency)}`,
+        tpl(t.products.buyFor, {
+          name: product.name,
+          price: formatPrice(product.price, product.currency),
+        }),
       openGraph: {
         title,
         description: product.description?.slice(0, 160) ?? undefined,
@@ -48,6 +54,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ProductPage({ params }: Props) {
   const { slug } = await params;
+  const t = getDictionary(await getLocale());
+  const locale = await getLocale();
 
   const product = await getProduct(slug).catch((error: unknown) => {
     if (error instanceof ApiError && error.status === 404) {
@@ -59,7 +67,7 @@ export default async function ProductPage({ params }: Props) {
   if (product === undefined) {
     return (
       <div className="container mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <ErrorState message="Не удалось загрузить товар" />
+        <ErrorState message={t.products.loadProductError} />
       </div>
     );
   }
@@ -82,11 +90,11 @@ export default async function ProductPage({ params }: Props) {
 
   return (
     <div className="container mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <nav aria-label="Хлебные крошки" className="mb-6">
+      <nav aria-label={t.common.breadcrumbs} className="mb-6">
         <ol className="flex flex-wrap items-center gap-1.5 text-sm text-muted-foreground">
           <li>
             <Link href="/products" className="transition-colors hover:text-primary">
-              Каталог
+              {t.products.title}
             </Link>
           </li>
           <li aria-hidden="true">
@@ -121,7 +129,7 @@ export default async function ProductPage({ params }: Props) {
               {product.category.name}
             </Link>
           </p>
-          <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
+          <h1 className="font-display mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
             {product.name}
           </h1>
 
@@ -138,12 +146,12 @@ export default async function ProductPage({ params }: Props) {
                   available ? "bg-success" : "bg-muted-foreground"
                 }`}
               />
-              {available ? "В наличии" : "Нет в наличии"}
+              {available ? t.common.inStock : t.common.outOfStock}
             </span>
           </div>
 
           <p className="mt-6 text-3xl font-bold sm:text-4xl">
-            {formatPrice(product.price, product.currency)}
+            {formatPrice(product.price, product.currency, locale)}
           </p>
 
           <p className="mt-6 leading-relaxed text-muted-foreground">
@@ -156,24 +164,24 @@ export default async function ProductPage({ params }: Props) {
             ) : (
               <Link
                 href={`/availability?productId=${product.id}`}
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-primary px-7 text-base font-medium text-primary-foreground transition-all hover:brightness-110"
+                className="glass-primary inline-flex h-12 items-center justify-center gap-2 rounded-lg px-7 text-base font-medium transition-all"
               >
                 <Bell className="size-4" />
-                Сообщить о поступлении
+                {t.common.notifyMe}
               </Link>
             )}
             <Link
               href={`/request?product=${encodeURIComponent(product.name)}`}
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-border bg-card px-7 text-base font-medium transition-colors hover:bg-muted"
+              className="glass inline-flex h-12 items-center justify-center gap-2 rounded-lg px-7 text-base font-medium transition-colors hover:bg-muted"
             >
               <ShoppingCart className="size-4" />
-              Задать вопрос
+              {t.common.askQuestion}
             </Link>
           </div>
 
           {product.attributes && Object.keys(product.attributes).length > 0 && (
             <div className="mt-8">
-              <h2 className="mb-3 text-lg font-semibold">Характеристики</h2>
+              <h2 className="mb-3 text-lg font-semibold">{t.common.specifications}</h2>
               <dl className="divide-y divide-border rounded-xl border border-border">
                 {Object.entries(product.attributes).map(([key, value]) => (
                   <div
@@ -192,7 +200,7 @@ export default async function ProductPage({ params }: Props) {
 
       {related.length > 0 && (
         <section className="mt-16">
-          <SectionTitle title="Похожие товары" />
+          <SectionTitle title={t.common.relatedProducts} />
           <ProductGrid>
             {related.map((product) => (
               <ProductCard key={product.id} product={product} />

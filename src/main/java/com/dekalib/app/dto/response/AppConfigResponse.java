@@ -8,7 +8,6 @@ public record AppConfigResponse(
     public record Features(
             boolean catalog,
             boolean orders,
-            boolean chat,
             boolean availabilityRequests
     ) {}
 

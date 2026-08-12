@@ -1,12 +1,17 @@
 import type { Metadata } from "next";
 import { MessageSquareText } from "lucide-react";
 import { RequestForm } from "@/components/forms/RequestForm";
+import { getDictionary, tpl } from "@/lib/i18n";
+import { getLocale } from "@/lib/locale";
 
-export const metadata: Metadata = {
-  title: "Задать вопрос",
-  description: "Оставьте заявку — мы свяжемся с вами",
-  alternates: { canonical: "/request" },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = getDictionary(await getLocale());
+  return {
+    title: t.request.title,
+    description: t.request.description,
+    alternates: { canonical: "/request" },
+  };
+}
 
 function readParam(value: string | string[] | undefined): string {
   return typeof value === "string" ? value : "";
@@ -19,8 +24,9 @@ export default async function RequestPage({
 }) {
   const sp = await searchParams;
   const productName = readParam(sp.product);
+  const t = getDictionary(await getLocale());
   const defaultMessage = productName
-    ? `Здравствуйте! Хочу узнать подробнее о товаре «${productName}».`
+    ? tpl(t.request.defaultMessage, { name: productName })
     : "";
 
   return (
@@ -29,12 +35,12 @@ export default async function RequestPage({
         <div className="mb-4 flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary">
           <MessageSquareText className="size-6" />
         </div>
-        <h1 className="text-3xl font-bold tracking-tight">Задать вопрос</h1>
+        <h1 className="font-display text-3xl font-bold tracking-tight">{t.request.title}</h1>
         <p className="mt-2 text-muted-foreground">
-          Консультация, расчёт стоимости или обратный звонок — оставьте заявку
+          {t.request.subtitle}
         </p>
       </div>
-      <div className="rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8">
+      <div className="glass-card rounded-2xl p-6 sm:p-8">
         <RequestForm defaultMessage={defaultMessage} />
       </div>
     </div>

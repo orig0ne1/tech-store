@@ -12,6 +12,7 @@ import {
 import { getConfig } from "@/lib/config";
 import { getCompany } from "@/lib/company";
 import { getErrorMessage } from "@/lib/api";
+import { useLocale } from "@/context/LocaleProvider";
 import type { AppConfig } from "@/types/config";
 import type { Company } from "@/types/company";
 import { DEFAULT_CONFIG, DEFAULT_PRIMARY_COLOR } from "@/types/config";
@@ -33,6 +34,7 @@ const SiteContext = createContext<SiteState>({
 });
 
 export function SiteProvider({ children }: { children: ReactNode }) {
+  const { t } = useLocale();
   const [config, setConfig] = useState<AppConfig | null>(null);
   const [company, setCompany] = useState<Company | null>(null);
   const [loading, setLoading] = useState(true);
@@ -58,10 +60,10 @@ export function SiteProvider({ children }: { children: ReactNode }) {
     if (comp.status === "fulfilled") {
       setCompany(comp.value);
     } else {
-      setError(getErrorMessage(comp.reason));
+      setError(getErrorMessage(comp.reason, t));
     }
     setLoading(false);
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     // Load site config/company once on mount (external system sync).

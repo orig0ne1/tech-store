@@ -1,30 +1,52 @@
 import { z } from "zod";
+import type { Dictionary } from "@/lib/i18n";
 
-export const nameSchema = z
-  .string()
-  .trim()
-  .min(2, "Введите имя (минимум 2 символа)")
-  .max(100, "Слишком длинное имя");
+export function createNameSchema(t: Dictionary) {
+  return z
+    .string()
+    .trim()
+    .min(2, t.validation.nameMin)
+    .max(100, t.validation.nameMax);
+}
 
-export const emailSchema = z
-  .string()
-  .trim()
-  .email("Введите корректный email")
-  .max(200, "Слишком длинный email");
+export function createEmailSchema(t: Dictionary) {
+  return z
+    .string()
+    .trim()
+    .email(t.validation.emailInvalid)
+    .max(200, t.validation.emailMax);
+}
 
-export const phoneSchema = z
-  .string()
-  .trim()
-  .max(20, "Слишком длинный номер")
-  .optional()
-  .or(z.literal(""));
+export function createPhoneSchema(t: Dictionary) {
+  return z
+    .string()
+    .trim()
+    .max(20, t.validation.phoneMax)
+    .optional()
+    .or(z.literal(""));
+}
 
-export const messageSchema = z
-  .string()
-  .trim()
-  .min(10, "Опишите ваш вопрос подробнее (минимум 10 символов)")
-  .max(2000, "Сообщение слишком длинное");
+export function createMessageSchema(t: Dictionary) {
+  return z
+    .string()
+    .trim()
+    .min(10, t.validation.messageMin)
+    .max(2000, t.validation.messageMax);
+}
 
-export const commentSchema = z.string().trim().max(2000, "Комментарий слишком длинный").optional().or(z.literal(""));
+export function createCommentSchema(t: Dictionary) {
+  return z
+    .string()
+    .trim()
+    .max(2000, t.validation.commentMax)
+    .optional()
+    .or(z.literal(""));
+}
 
-export const quantitySchema = z.number().int().min(1, "Минимум 1").max(99, "Максимум 99");
+export function createQuantitySchema(t: Dictionary) {
+  return z
+    .number()
+    .int()
+    .min(1, t.validation.qtyMin)
+    .max(99, t.validation.qtyMax);
+}

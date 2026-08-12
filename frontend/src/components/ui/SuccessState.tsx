@@ -10,7 +10,7 @@ export function SuccessState({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-3 rounded-xl border border-border bg-card px-6 py-12 text-center">
+    <div className="glass-card flex flex-col items-center justify-center gap-3 rounded-xl px-6 py-12 text-center">
       <div className="flex size-12 items-center justify-center rounded-full bg-success/10 text-success">
         <CheckCircle2 className="size-6" />
       </div>

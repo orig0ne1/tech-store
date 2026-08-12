@@ -3,6 +3,7 @@
 import { useCallback } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useLocale } from "@/context/LocaleProvider";
 import { cn } from "@/lib/utils";
 
 interface PaginationProps {
@@ -22,6 +23,7 @@ export function Pagination({ page, totalPages }: PaginationProps) {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { t } = useLocale();
 
   const go = useCallback(
     (target: number) => {
@@ -44,14 +46,14 @@ export function Pagination({ page, totalPages }: PaginationProps) {
   return (
     <nav
       className="mt-8 flex items-center justify-center gap-1.5"
-      aria-label="Пагинация"
+      aria-label={t.common.pagination}
     >
       <button
         type="button"
         onClick={() => go(page - 1)}
         disabled={page <= 0}
-        aria-label="Предыдущая страница"
-        className="inline-flex size-10 items-center justify-center rounded-lg border border-border transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-40"
+        aria-label={t.common.prevPage}
+        className="glass inline-flex size-10 items-center justify-center rounded-lg transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-40"
       >
         <ChevronLeft className="size-4" />
       </button>
@@ -60,7 +62,7 @@ export function Pagination({ page, totalPages }: PaginationProps) {
           <button
             type="button"
             onClick={() => go(0)}
-            className="inline-flex size-10 items-center justify-center rounded-lg border border-border transition-colors hover:bg-muted"
+            className="glass inline-flex size-10 items-center justify-center rounded-lg transition-colors hover:bg-muted"
           >
             1
           </button>
@@ -78,8 +80,8 @@ export function Pagination({ page, totalPages }: PaginationProps) {
           className={cn(
             "inline-flex size-10 items-center justify-center rounded-lg text-sm font-medium transition-colors",
             p === page
-              ? "bg-primary text-primary-foreground"
-              : "border border-border hover:bg-muted"
+              ? "glass-primary"
+              : "glass hover:bg-muted"
           )}
         >
           {p + 1}
@@ -93,7 +95,7 @@ export function Pagination({ page, totalPages }: PaginationProps) {
           <button
             type="button"
             onClick={() => go(totalPages - 1)}
-            className="inline-flex size-10 items-center justify-center rounded-lg border border-border transition-colors hover:bg-muted"
+            className="glass inline-flex size-10 items-center justify-center rounded-lg transition-colors hover:bg-muted"
           >
             {totalPages}
           </button>
@@ -103,8 +105,8 @@ export function Pagination({ page, totalPages }: PaginationProps) {
         type="button"
         onClick={() => go(page + 1)}
         disabled={page >= totalPages - 1}
-        aria-label="Следующая страница"
-        className="inline-flex size-10 items-center justify-center rounded-lg border border-border transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-40"
+        aria-label={t.common.nextPage}
+        className="glass inline-flex size-10 items-center justify-center rounded-lg transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-40"
       >
         <ChevronRight className="size-4" />
       </button>

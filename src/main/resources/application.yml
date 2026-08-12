@@ -35,7 +35,6 @@ app:
   features:
     catalog: true
     orders: true
-    chat: true
     availability-requests: true
   theme:
     primary-color: "#6366f1"

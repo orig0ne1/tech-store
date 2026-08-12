@@ -1,26 +1,35 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Send } from "lucide-react";
 import { z } from "zod";
 import { createCustomerRequest } from "@/lib/requests";
 import { getErrorMessage } from "@/lib/api";
-import { emailSchema, messageSchema, nameSchema, phoneSchema } from "@/lib/schemas";
+import { useLocale } from "@/context/LocaleProvider";
+import type { Dictionary } from "@/lib/i18n";
+import {
+  createEmailSchema,
+  createMessageSchema,
+  createNameSchema,
+  createPhoneSchema,
+} from "@/lib/schemas";
 import { Button } from "../ui/Button";
 import { Input } from "../ui/Input";
 import { SuccessState } from "../ui/SuccessState";
 import { cn } from "@/lib/utils";
 
-const requestSchema = z.object({
-  name: nameSchema,
-  email: emailSchema,
-  phone: phoneSchema,
-  message: messageSchema,
-});
+type RequestFormValues = z.infer<ReturnType<typeof buildSchema>>;
 
-type RequestFormValues = z.infer<typeof requestSchema>;
+function buildSchema(t: Dictionary) {
+  return z.object({
+    name: createNameSchema(t),
+    email: createEmailSchema(t),
+    phone: createPhoneSchema(t),
+    message: createMessageSchema(t),
+  });
+}
 
 interface RequestFormProps {
   className?: string;
@@ -28,6 +37,8 @@ interface RequestFormProps {
 }
 
 export function RequestForm({ className, defaultMessage = "" }: RequestFormProps) {
+  const { t } = useLocale();
+  const requestSchema = useMemo(() => buildSchema(t), [t]);
   const [success, setSuccess] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const {
@@ -52,22 +63,22 @@ export function RequestForm({ className, defaultMessage = "" }: RequestFormProps
       setSuccess(true);
       reset();
     } catch (error) {
-      setServerError(getErrorMessage(error));
+      setServerError(getErrorMessage(error, t));
     }
   };
 
   if (success) {
     return (
       <SuccessState
-        title="Заявка отправлена"
-        description="Спасибо! Мы свяжемся с вами в ближайшее время."
+        title={t.request.successTitle}
+        description={t.request.successDescription}
         action={
           <button
             type="button"
             onClick={() => setSuccess(false)}
             className="text-sm font-medium text-primary hover:underline"
           >
-            Отправить ещё одну заявку
+            {t.common.sendAnother}
           </button>
         }
       />
@@ -81,24 +92,24 @@ export function RequestForm({ className, defaultMessage = "" }: RequestFormProps
       noValidate
     >
       <Input
-        label="Имя"
-        placeholder="Иван"
+        label={t.common.name}
+        placeholder={t.common.namePlaceholder}
         autoComplete="name"
         {...register("name")}
         error={errors.name?.message}
       />
       <Input
-        label="Email"
+        label={t.common.email}
         type="email"
-        placeholder="ivan@example.com"
+        placeholder={t.common.emailPlaceholder}
         autoComplete="email"
         {...register("email")}
         error={errors.email?.message}
       />
       <Input
-        label="Телефон"
+        label={t.common.phone}
         type="tel"
-        placeholder="+7 (999) 000-00-00"
+        placeholder={t.common.phonePlaceholder}
         autoComplete="tel"
         {...register("phone")}
         error={errors.phone?.message}
@@ -108,13 +119,13 @@ export function RequestForm({ className, defaultMessage = "" }: RequestFormProps
           htmlFor="request-message"
           className="mb-1.5 block text-sm font-medium text-foreground"
         >
-          Сообщение
+          {t.common.message}
         </label>
         <textarea
           id="request-message"
           rows={4}
-          placeholder="Расскажите, чем мы можем помочь"
-          className="w-full resize-none rounded-lg border border-border bg-card px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary/40"
+          placeholder={t.common.messagePlaceholder}
+          className="w-full resize-none rounded-lg border border-border bg-muted/40 px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground backdrop-blur-sm transition-all focus:border-transparent focus:bg-card focus:outline-none focus:ring-2 focus:ring-primary/40"
           {...register("message")}
         />
         {errors.message && (
@@ -128,7 +139,7 @@ export function RequestForm({ className, defaultMessage = "" }: RequestFormProps
       )}
       <Button type="submit" size="lg" loading={isSubmitting} className="w-full">
         <Send className="size-4" />
-        Отправить заявку
+        {t.common.submitRequestButton}
       </Button>
     </form>
   );

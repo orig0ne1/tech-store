@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSearchParams } from "next/navigation";
@@ -9,25 +9,35 @@ import { z } from "zod";
 import { getProducts } from "@/lib/products";
 import { createAvailabilityRequest } from "@/lib/requests";
 import { getErrorMessage } from "@/lib/api";
-import { emailSchema, nameSchema, phoneSchema } from "@/lib/schemas";
+import { useLocale } from "@/context/LocaleProvider";
+import type { Dictionary } from "@/lib/i18n";
+import {
+  createEmailSchema,
+  createNameSchema,
+  createPhoneSchema,
+} from "@/lib/schemas";
 import type { ProductSummary } from "@/types/product";
 import { Button } from "../ui/Button";
 import { Input } from "../ui/Input";
 import { Select } from "../ui/Select";
 import { SuccessState } from "../ui/SuccessState";
 
-const availabilitySchema = z.object({
-  name: nameSchema,
-  email: emailSchema,
-  phone: phoneSchema,
-  productId: z.string().min(1, "Выберите товар"),
-});
+function buildSchema(t: Dictionary) {
+  return z.object({
+    name: createNameSchema(t),
+    email: createEmailSchema(t),
+    phone: createPhoneSchema(t),
+    productId: z.string().min(1, t.validation.selectProduct),
+  });
+}
 
-type AvailabilityFormValues = z.infer<typeof availabilitySchema>;
+type AvailabilityFormValues = z.infer<ReturnType<typeof buildSchema>>;
 
 export function AvailabilityForm() {
   const searchParams = useSearchParams();
   const preselected = searchParams.get("productId");
+  const { t } = useLocale();
+  const availabilitySchema = useMemo(() => buildSchema(t), [t]);
 
   const [products, setProducts] = useState<ProductSummary[]>([]);
   const [productsError, setProductsError] = useState<string | null>(null);
@@ -52,8 +62,8 @@ export function AvailabilityForm() {
   useEffect(() => {
     getProducts({ size: 100, sort: "name,asc" })
       .then((page) => setProducts(page.content))
-      .catch((error) => setProductsError(getErrorMessage(error)));
-  }, []);
+      .catch((error) => setProductsError(getErrorMessage(error, t)));
+  }, [t]);
 
   const onSubmit = async (values: AvailabilityFormValues) => {
     setServerError(null);
@@ -67,22 +77,22 @@ export function AvailabilityForm() {
       setSuccess(true);
       reset();
     } catch (error) {
-      setServerError(getErrorMessage(error));
+      setServerError(getErrorMessage(error, t));
     }
   };
 
   if (success) {
     return (
       <SuccessState
-        title="Мы сообщим о поступлении"
-        description="Как только товар появится в наличии, мы напишем вам на указанный email."
+        title={t.availability.successTitle}
+        description={t.availability.successDescription}
         action={
           <button
             type="button"
             onClick={() => setSuccess(false)}
             className="text-sm font-medium text-primary hover:underline"
           >
-            Оставить ещё одну заявку
+            {t.availability.submitAgain}
           </button>
         }
       />
@@ -100,7 +110,7 @@ export function AvailabilityForm() {
           htmlFor="availability-product"
           className="mb-1.5 block text-sm font-medium text-foreground"
         >
-          Товар
+          {t.common.productLabel}
         </label>
         {productsError ? (
           <p className="rounded-lg bg-danger/10 px-3 py-2 text-sm text-danger">
@@ -112,7 +122,7 @@ export function AvailabilityForm() {
             disabled={products.length === 0}
             {...register("productId")}
           >
-            <option value="">Выберите товар</option>
+            <option value="">{t.common.selectProduct}</option>
             {products.map((product) => (
               <option key={product.id} value={product.id}>
                 {product.name}
@@ -127,24 +137,24 @@ export function AvailabilityForm() {
         )}
       </div>
       <Input
-        label="Имя"
-        placeholder="Иван"
+        label={t.common.name}
+        placeholder={t.common.namePlaceholder}
         autoComplete="name"
         {...register("name")}
         error={errors.name?.message}
       />
       <Input
-        label="Email"
+        label={t.common.email}
         type="email"
-        placeholder="ivan@example.com"
+        placeholder={t.common.emailPlaceholder}
         autoComplete="email"
         {...register("email")}
         error={errors.email?.message}
       />
       <Input
-        label="Телефон"
+        label={t.common.phone}
         type="tel"
-        placeholder="+7 (999) 000-00-00"
+        placeholder={t.common.phonePlaceholder}
         autoComplete="tel"
         {...register("phone")}
         error={errors.phone?.message}
@@ -156,7 +166,7 @@ export function AvailabilityForm() {
       )}
       <Button type="submit" size="lg" loading={isSubmitting} className="w-full">
         <Bell className="size-4" />
-        Сообщить о поступлении
+        {t.common.notifyMe}
       </Button>
     </form>
   );

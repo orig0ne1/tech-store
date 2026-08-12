@@ -1,4 +1,4 @@
-package com.dekalib.app.dto;
+package com.dekalib.app.dto.response;
 
 import java.time.Instant;
 

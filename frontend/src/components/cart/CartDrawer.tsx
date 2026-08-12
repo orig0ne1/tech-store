@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Minus, Plus, ShoppingCart, Trash2, X } from "lucide-react";
 import { useCart } from "@/context/CartProvider";
+import { useLocale } from "@/context/LocaleProvider";
 import { formatPrice } from "@/lib/utils";
 import { ProductImage } from "../ui/ProductImage";
 
@@ -15,30 +16,31 @@ export function CartDrawer() {
     removeItem,
     subtotal,
   } = useCart();
+  const { t, locale } = useLocale();
 
   if (!isOpen) return null;
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-black/40"
+      className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
-      aria-label="Корзина"
+      aria-label={t.common.cart}
       onClick={closeCart}
     >
       <aside
-        className="absolute inset-y-0 right-0 flex w-full max-w-md flex-col bg-card shadow-2xl"
+        className="glass-strong absolute inset-y-0 right-0 flex w-full max-w-md flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b border-border px-5 py-4">
           <h2 className="flex items-center gap-2 text-lg font-semibold">
             <ShoppingCart className="size-5" />
-            Корзина
+            {t.common.cart}
           </h2>
           <button
             type="button"
             onClick={closeCart}
-            aria-label="Закрыть корзину"
+            aria-label={t.common.closeCart}
             className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           >
             <X className="size-5" />
@@ -50,16 +52,16 @@ export function CartDrawer() {
             <div className="flex size-14 items-center justify-center rounded-full bg-muted text-muted-foreground">
               <ShoppingCart className="size-7" />
             </div>
-            <p className="font-medium">Корзина пуста</p>
+            <p className="font-medium">{t.common.cartEmpty}</p>
             <p className="text-sm text-muted-foreground">
-              Добавьте товары из каталога, чтобы оформить заказ
+              {t.common.cartEmptyHint}
             </p>
             <Link
               href="/products"
               onClick={closeCart}
-              className="mt-2 inline-flex h-11 items-center justify-center rounded-lg bg-primary px-5 text-sm font-medium text-primary-foreground transition-all hover:brightness-110"
+              className="glass-primary mt-2 inline-flex h-11 items-center justify-center rounded-lg px-5 text-sm font-medium transition-all"
             >
-              Перейти в каталог
+              {t.common.browseCatalog}
             </Link>
           </div>
         ) : (
@@ -83,13 +85,13 @@ export function CartDrawer() {
                       {item.name}
                     </Link>
                     <span className="mt-0.5 text-xs text-muted-foreground">
-                      {formatPrice(item.price, item.currency)}
+                      {formatPrice(item.price, item.currency, locale)}
                     </span>
                     <div className="mt-auto flex items-center gap-3">
-                      <div className="inline-flex items-center rounded-lg border border-border">
+                      <div className="glass inline-flex items-center rounded-lg">
                         <button
                           type="button"
-                          aria-label="Уменьшить количество"
+                          aria-label={t.common.decreaseQty}
                           onClick={() =>
                             updateQuantity(item.productId, item.quantity - 1)
                           }
@@ -102,7 +104,7 @@ export function CartDrawer() {
                         </span>
                         <button
                           type="button"
-                          aria-label="Увеличить количество"
+                          aria-label={t.common.increaseQty}
                           onClick={() =>
                             updateQuantity(item.productId, item.quantity + 1)
                           }
@@ -113,7 +115,7 @@ export function CartDrawer() {
                       </div>
                       <button
                         type="button"
-                        aria-label="Удалить товар"
+                        aria-label={t.common.removeItem}
                         onClick={() => removeItem(item.productId)}
                         className="ml-auto flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-danger/10 hover:text-danger"
                       >
@@ -128,18 +130,18 @@ export function CartDrawer() {
             <div className="border-t border-border px-5 py-4">
               <div className="mb-4 flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">
-                  Итого (оценка)
+                  {t.common.totalEstimate}
                 </span>
                 <span className="text-lg font-bold">
-                  {formatPrice(subtotal, items[0].currency)}
+                  {formatPrice(subtotal, items[0].currency, locale)}
                 </span>
               </div>
               <Link
                 href="/orders"
                 onClick={closeCart}
-                className="inline-flex h-12 w-full items-center justify-center rounded-lg bg-primary text-sm font-medium text-primary-foreground transition-all hover:brightness-110"
+                className="glass-primary inline-flex h-12 w-full items-center justify-center rounded-lg text-sm font-medium transition-all"
               >
-                Оформить заказ
+                {t.orders.placeOrder}
               </Link>
             </div>
           </>

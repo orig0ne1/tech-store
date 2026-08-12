@@ -3,6 +3,8 @@ CREATE TABLE companies (
     name VARCHAR(255) NOT NULL,
     description VARCHAR(255),
     logo VARCHAR(255),
+    latitude DOUBLE PRECISION,
+    longitude DOUBLE PRECISION,
     email VARCHAR(255),
     phone VARCHAR(255),
     address VARCHAR(255),
@@ -18,6 +20,12 @@ CREATE TABLE companies (
     instagram VARCHAR(255),
     youtube VARCHAR(255),
     website VARCHAR(255)
+);
+
+CREATE TABLE company_photos (
+    company_id BIGINT NOT NULL,
+    image_url VARCHAR(255) NOT NULL,
+    CONSTRAINT fk_company_photos_company FOREIGN KEY (company_id) REFERENCES companies (id)
 );
 
 CREATE TABLE categories (
@@ -95,23 +103,6 @@ CREATE TABLE order_items (
     price BIGINT NOT NULL,
     CONSTRAINT fk_order_items_order FOREIGN KEY (order_id) REFERENCES orders (id),
     CONSTRAINT fk_order_items_product FOREIGN KEY (product_id) REFERENCES products (id)
-);
-
-CREATE TABLE chats (
-    id VARCHAR(255) PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL,
-    status VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP
-);
-
-CREATE TABLE chat_messages (
-    id BIGSERIAL PRIMARY KEY,
-    chat_id VARCHAR(255) NOT NULL,
-    sender VARCHAR(255) NOT NULL,
-    text VARCHAR(2000) NOT NULL,
-    created_at TIMESTAMP,
-    CONSTRAINT fk_chat_messages_chat FOREIGN KEY (chat_id) REFERENCES chats (id)
 );
 
 INSERT INTO companies (id, name, description, logo,

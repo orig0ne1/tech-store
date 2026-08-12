@@ -1,6 +1,6 @@
 package com.dekalib.app.controller;
 
-import com.dekalib.app.dto.HealthResponse;
+import com.dekalib.app.dto.response.HealthResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

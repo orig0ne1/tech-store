@@ -4,7 +4,7 @@ export function ProductSkeleton({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "flex flex-col overflow-hidden rounded-xl border border-border bg-card",
+        "flex flex-col overflow-hidden rounded-xl glass-card",
         className
       )}
     >

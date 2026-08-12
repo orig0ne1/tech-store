@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSite } from "@/context/SiteProvider";
+import { useLocale } from "@/context/LocaleProvider";
 import { cn } from "@/lib/utils";
 
 export function NavLinks({
@@ -14,13 +15,14 @@ export function NavLinks({
 }) {
   const pathname = usePathname();
   const { config } = useSite();
+  const { t } = useLocale();
   const catalogEnabled = config?.features.catalog ?? true;
 
   const links: Array<{ href: string; label: string; enabled?: boolean }> = [
-    { href: "/products", label: "Каталог", enabled: catalogEnabled },
-    { href: "/categories", label: "Категории", enabled: catalogEnabled },
-    { href: "/about", label: "О компании" },
-    { href: "/about#contacts", label: "Контакты" },
+    { href: "/products", label: t.common.catalog, enabled: catalogEnabled },
+    { href: "/categories", label: t.common.categories, enabled: catalogEnabled },
+    { href: "/about", label: t.common.about },
+    { href: "/about#contacts", label: t.common.contacts },
   ];
 
   return (
@@ -39,9 +41,9 @@ export function NavLinks({
                 onClick={onNavigate}
                 aria-current={isActive ? "page" : undefined}
                 className={cn(
-                  "inline-flex items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                  "inline-flex items-center rounded-full px-3.5 py-2 text-sm font-medium transition-all",
                   isActive
-                    ? "text-primary"
+                    ? "bg-primary/10 text-primary"
                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 )}
               >

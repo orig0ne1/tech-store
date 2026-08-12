@@ -28,6 +28,9 @@ export interface Company {
   name: string;
   description: string;
   logo: string;
+  latitude?: number | null;
+  longitude?: number | null;
+  photos: string[];
   contacts: CompanyContacts;
   socials: CompanySocials;
 }

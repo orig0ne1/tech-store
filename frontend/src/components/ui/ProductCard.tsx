@@ -3,15 +3,18 @@
 import Link from "next/link";
 import { Bell, Eye, ShoppingCart } from "lucide-react";
 import { useCart } from "@/context/CartProvider";
+import { useLocale } from "@/context/LocaleProvider";
 import { formatPrice } from "@/lib/utils";
 import type { ProductSummary } from "@/types/product";
 import { ProductImage } from "./ProductImage";
+import { Highlight } from "../product/Highlight";
 
 interface ProductCardProps {
   product: ProductSummary;
   showCategory?: boolean;
   categoryName?: string;
   priority?: boolean;
+  highlight?: string;
 }
 
 export function ProductCard({
@@ -19,12 +22,14 @@ export function ProductCard({
   showCategory = false,
   categoryName,
   priority = false,
+  highlight,
 }: ProductCardProps) {
   const { addItem } = useCart();
+  const { t, locale } = useLocale();
   const { id, name, slug, price, currency, image, available } = product;
 
   return (
-    <article className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+    <article className="glass-card group flex flex-col overflow-hidden rounded-xl transition-all duration-200 hover:-translate-y-1 hover:shadow-lift">
       <Link
         href={`/products/${slug}`}
         className="relative block aspect-square w-full overflow-hidden bg-muted"
@@ -49,7 +54,7 @@ export function ProductCard({
               available ? "bg-success" : "bg-muted-foreground"
             }`}
           />
-          {available ? "В наличии" : "Нет в наличии"}
+          {available ? t.common.inStock : t.common.outOfStock}
         </span>
       </Link>
 
@@ -64,19 +69,24 @@ export function ProductCard({
             href={`/products/${slug}`}
             className="transition-colors hover:text-primary"
           >
-            {name}
+            <Highlight text={name} query={highlight} />
           </Link>
         </h3>
+        {highlight && (
+          <p className="line-clamp-2 text-xs leading-relaxed text-muted-foreground">
+            <Highlight text={product.description} query={highlight} />
+          </p>
+        )}
         <p className="mt-auto pt-2 text-lg font-bold">
-          {formatPrice(price, currency)}
+          {formatPrice(price, currency, locale)}
         </p>
         <div className="flex gap-2">
           <Link
             href={`/products/${slug}`}
-            className="inline-flex h-9 flex-1 items-center justify-center gap-1.5 rounded-lg border border-border bg-transparent text-sm font-medium transition-colors hover:bg-muted"
+            className="inline-flex h-9 flex-1 items-center justify-center gap-1.5 rounded-lg glass text-sm font-medium transition-colors hover:bg-muted"
           >
             <Eye className="size-4" />
-            Подробнее
+            {t.common.viewDetails}
           </Link>
           {available ? (
             <button
@@ -84,18 +94,18 @@ export function ProductCard({
               onClick={() =>
                 addItem({ productId: id, name, slug, price, currency, image })
               }
-              className="inline-flex h-9 flex-1 items-center justify-center gap-1.5 rounded-lg bg-primary text-sm font-medium text-primary-foreground transition-all hover:brightness-110"
+              className="glass-primary inline-flex h-9 flex-1 items-center justify-center gap-1.5 rounded-lg text-sm font-medium transition-all active:scale-[0.97]"
             >
               <ShoppingCart className="size-4" />
-              В корзину
+              {t.common.addToCart}
             </button>
           ) : (
             <Link
               href={`/availability?productId=${id}`}
-              className="inline-flex h-9 flex-1 items-center justify-center gap-1.5 rounded-lg bg-accent text-sm font-medium text-foreground transition-colors hover:bg-border"
+              className="inline-flex h-9 flex-1 items-center justify-center gap-1.5 rounded-lg glass text-sm font-medium transition-colors hover:bg-muted"
             >
               <Bell className="size-4" />
-              Сообщить о поступлении
+              {t.common.notifyMe}
             </Link>
           )}
         </div>

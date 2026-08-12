@@ -44,7 +44,6 @@ public class AppProperties {
     public static class Features {
         private boolean catalog = true;
         private boolean orders = true;
-        private boolean chat = true;
         private boolean availabilityRequests = true;
 
         public boolean isCatalog() {
@@ -61,14 +60,6 @@ public class AppProperties {
 
         public void setOrders(boolean orders) {
             this.orders = orders;
-        }
-
-        public boolean isChat() {
-            return chat;
-        }
-
-        public void setChat(boolean chat) {
-            this.chat = chat;
         }
 
         public boolean isAvailabilityRequests() {

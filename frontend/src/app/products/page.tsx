@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { getCategories } from "@/lib/categories";
 import { getConfig } from "@/lib/config";
 import { getProducts } from "@/lib/products";
+import { getDictionary, tpl } from "@/lib/i18n";
+import { getLocale } from "@/lib/locale";
 import { ProductCard } from "@/components/ui/ProductCard";
 import { ProductGrid } from "@/components/ui/ProductGrid";
 import { Pagination } from "@/components/ui/Pagination";
@@ -28,6 +30,7 @@ export default async function ProductsPage({
   const sort = readParam(sp.sort) || "id,asc";
   const requestedPage = parseInt(readParam(sp.page), 10);
   const page = Number.isFinite(requestedPage) && requestedPage > 0 ? requestedPage : 0;
+  const t = getDictionary(await getLocale());
 
   const [configResult, categoriesResult] = await Promise.allSettled([
     getConfig(),
@@ -52,7 +55,7 @@ export default async function ProductsPage({
   if (!pageData) {
     return (
       <div className="container mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <ErrorState message="Не удалось загрузить каталог" />
+        <ErrorState message={t.products.loadError} />
       </div>
     );
   }
@@ -68,9 +71,9 @@ export default async function ProductsPage({
   return (
     <div className="container mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <header className="mb-6">
-        <h1 className="text-3xl font-bold tracking-tight">Каталог</h1>
+        <h1 className="font-display text-3xl font-bold tracking-tight">{t.products.title}</h1>
         <p className="mt-1 text-muted-foreground">
-          Найдено товаров: {pageData.totalElements}
+          {tpl(t.products.found, { count: pageData.totalElements })}
         </p>
       </header>
 
@@ -89,16 +92,20 @@ export default async function ProductsPage({
 
       <div className="mt-6">
         {pageData.content.length === 0 ? (
-          <div className="rounded-xl border border-border bg-card px-6 py-16 text-center">
-            <p className="font-medium">Ничего не найдено</p>
+          <div className="glass-card rounded-xl px-6 py-16 text-center">
+            <p className="font-medium">{t.common.nothingFound}</p>
             <p className="mt-1 text-sm text-muted-foreground">
-              Попробуйте изменить запрос или параметры фильтра
+              {t.products.changeQuery}
             </p>
           </div>
         ) : (
           <ProductGrid>
             {pageData.content.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard
+                key={product.id}
+                product={product}
+                highlight={search || undefined}
+              />
             ))}
           </ProductGrid>
         )}

@@ -80,8 +80,9 @@ public class ProductService {
         Specification<Product> spec = Specification.where(null);
         if (search != null && !search.isBlank()) {
             String term = search.trim().toLowerCase();
-            spec = spec.and((root, query, cb) ->
-                    cb.like(cb.lower(root.get("name")), "%" + term + "%"));
+            spec = spec.and((root, query, cb) -> cb.or(
+                    cb.like(cb.lower(root.get("name")), "%" + term + "%"),
+                    cb.like(cb.lower(root.get("description")), "%" + term + "%")));
         }
         if (categorySlug != null && !categorySlug.isBlank()) {
             spec = spec.and((root, query, cb) ->

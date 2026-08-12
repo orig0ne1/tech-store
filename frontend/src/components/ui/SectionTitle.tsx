@@ -20,7 +20,11 @@ export function SectionTitle({
       )}
     >
       <div>
-        <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
+        <h2 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">
+          <span
+            className="mb-2.5 block h-1 w-12 rounded-full bg-primary"
+            aria-hidden="true"
+          />
           {title}
         </h2>
         {subtitle && (

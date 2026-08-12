@@ -43,6 +43,9 @@ public class CompanyService {
                 company.getName(),
                 company.getDescription(),
                 company.getLogo(),
+                company.getLatitude(),
+                company.getLongitude(),
+                company.getPhotos(),
                 toContactsResponse(company.getContacts()),
                 toSocialsResponse(company.getSocials())
         );
