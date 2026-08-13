@@ -2,6 +2,19 @@
 
 Full-stack e-commerce web application for an electronics store. It consists of a **Spring Boot (Java) REST API** backend and a **Next.js (React + TypeScript)** frontend with a distinctive **liquid-glass** design system, light/dark themes and English/Russian localization.
 
+## Screenshots
+
+![Screenshot 1](screenshots/01.png)
+![Screenshot 2](screenshots/02.png)
+![Screenshot 3](screenshots/03.png)
+![Screenshot 4](screenshots/04.png)
+![Screenshot 5](screenshots/05.png)
+![Screenshot 6](screenshots/06.png)
+![Screenshot 7](screenshots/07.png)
+![Screenshot 8](screenshots/08.png)
+![Screenshot 9](screenshots/09.png)
+![Screenshot 10](screenshots/10.png)
+
 ## Features
 
 - **Catalog** — categories and products with pagination, sorting and search with live suggestions
@@ -20,7 +33,7 @@ Full-stack e-commerce web application for an electronics store. It consists of a
 
 - Java 17, Spring Boot 3.2, Spring Web, Spring Data JPA, Bean Validation
 - Flyway database migrations
-- PostgreSQL (default) and SQLite (dev profile)
+- PostgreSQL (default) and SQLite (dev profile), Redis
 - Maven build
 
 **Frontend**
@@ -132,17 +145,4 @@ Base path: `/api/v1`
 | `GET` | `/orders/{id}` | Order details |
 | `POST` | `/orders/{id}/cancel` | Cancel an order |
 | `POST` | `/requests` | Submit a customer request |
-| `POST` | `/availability-requests` | Submit an availability request |
-
-## Screenshots
-
-![Screenshot 1](screenshots/01.png)
-![Screenshot 2](screenshots/02.png)
-![Screenshot 3](screenshots/03.png)
-![Screenshot 4](screenshots/04.png)
-![Screenshot 5](screenshots/05.png)
-![Screenshot 6](screenshots/06.png)
-![Screenshot 7](screenshots/07.png)
-![Screenshot 8](screenshots/08.png)
-![Screenshot 9](screenshots/09.png)
-![Screenshot 10](screenshots/10.png)
+| `POST` | `/availability-requests` | Submit an availability request | 
