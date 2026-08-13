@@ -8,6 +8,7 @@ public class AppProperties {
     private Features features = new Features();
     private Theme theme = new Theme();
     private Pagination pagination = new Pagination();
+    private RateLimit rateLimit = new RateLimit();
 
     public String getFrontendUrl() {
         return frontendUrl;
@@ -39,6 +40,14 @@ public class AppProperties {
 
     public void setPagination(Pagination pagination) {
         this.pagination = pagination;
+    }
+
+    public RateLimit getRateLimit() {
+        return rateLimit;
+    }
+
+    public void setRateLimit(RateLimit rateLimit) {
+        this.rateLimit = rateLimit;
     }
 
     public static class Features {
@@ -92,6 +101,45 @@ public class AppProperties {
 
         public void setDefaultSize(int defaultSize) {
             this.defaultSize = defaultSize;
+        }
+    }
+
+    public static class RateLimit {
+        private boolean enabled = true;
+        private int capacity = 100;
+        private int refillPerMinute = 60;
+        private int windowSeconds = 60;
+
+        public boolean isEnabled() {
+            return enabled;
+        }
+
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
+        }
+
+        public int getCapacity() {
+            return capacity;
+        }
+
+        public void setCapacity(int capacity) {
+            this.capacity = capacity;
+        }
+
+        public int getRefillPerMinute() {
+            return refillPerMinute;
+        }
+
+        public void setRefillPerMinute(int refillPerMinute) {
+            this.refillPerMinute = refillPerMinute;
+        }
+
+        public int getWindowSeconds() {
+            return windowSeconds;
+        }
+
+        public void setWindowSeconds(int windowSeconds) {
+            this.windowSeconds = windowSeconds;
         }
     }
 }

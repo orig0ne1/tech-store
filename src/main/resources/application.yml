@@ -26,6 +26,11 @@ spring:
     serialization:
       write-dates-as-timestamps: false
 
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
   sql:
     init:
       mode: never
@@ -40,3 +45,8 @@ app:
     primary-color: "#6366f1"
   pagination:
     default-size: 20
+  rate-limit:
+    enabled: ${RATE_LIMIT_ENABLED:true}
+    capacity: ${RATE_LIMIT_CAPACITY:100}
+    refill-per-minute: ${RATE_LIMIT_REFILL_PER_MINUTE:60}
+    window-seconds: ${RATE_LIMIT_WINDOW_SECONDS:60}
